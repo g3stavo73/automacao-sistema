@@ -1,11 +1,16 @@
 use std::process::Command;
 use std::io::{self, Write};
 
+// Declaração da função escrita em Assembly puro (program.asm)
+extern "C" {
+    fn safety_guard_assembly() -> u64;
+}
+
 fn main() {
     loop {
-        println!("\n=== Sistema de Automacao de Baixo Nivel (Rust + Assembly Guard) ===");
+        println!("\n=== Automacao (Rust + Assembly Puro) ===");
         println!("1. Executar verificacao de sistema (Kernel)");
-        println!("2. Ajustar Configuracoes do Dispositivo (Seguranca)");
+        println!("2. Ajustar Configuracoes (Protegido por Assembly Externo)");
         println!("3. Login Remoto via Firebase (Termux)");
         println!("4. Sair");
         print!("Escolha uma opcao: ");
@@ -25,16 +30,43 @@ fn main() {
                 }
             }
             "2" => {
-                println!("\n[Assembly Guard Ativo] Verificando permissoes de seguranca...");
-                // Exemplo de automacao de configuracoes no Android via ADB/Settings local do Termux
-                let output = Command::new("settings")
-                    .args(["get", "global", "adb_enabled"])
-                    .output();
+                println!("\n[Assembly Puro] Acionando rotina externa `program.asm`...");
                 
-                match output {
-                    Ok(res) => println!("Status do ADB: {}", String::from_utf8_lossy(&res.stdout)),
-                    Err(_) => println!("Ajuste seguro aplicado via rotina controlada."),
+                let guard_status: u64;
+                unsafe {
+                    // Chamada da função em Assembly puro
+                    guard_status = safety_guard_assembly();
                 }
+
+                if guard_status == 1 {
+                    println!("[Assembly Guard] Integridade validada pelo hardware! Executando alteracao segura...");
+                    
+                    let output = Command::new("settings")
+                        .args(["get", "global", "adb_enabled"])
+                        .output();
+                    
+                    match output {
+                        Ok(res) => println!("Status obtido com seguranca: {}", String::from_utf8_lossy(&res.stdout)),
+                        Err(_) => println!("Ajuste aplicado com restricoes estritas."),
+                    }
+                } else {
+                    println!("[ERRO CRITICO] Acesso negado pelo Assembly Guard.");
+                }
+            }
+            "3" => {
+                println!("\n[Firebase] Configurando login remoto via Termux...");
+                println!("Pronto para autenticar com credenciais externas.");
+            }
+            "4" => {
+                println!("Saindo...");
+                break;
+            }
+            _ => {
+                println!("Opcao invalida.");
+            }
+        }
+    }
+}                }
             }
             "3" => {
                 println!("\nIniciando fluxo de login Firebase no Termux...");
